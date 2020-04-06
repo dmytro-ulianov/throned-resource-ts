@@ -1,6 +1,6 @@
 import {Resource, Initial, Loading} from 'types'
 
-export enum tag {
+enum tag {
   initial = 'initial',
   loading = 'loading',
   success = 'success',
@@ -12,8 +12,6 @@ const loading: Loading = {tag: tag.loading}
 const success = <D>(value: D): Resource<D> => ({tag: tag.success, value})
 const failure = <E>(error: E): Resource<any, E> => ({tag: tag.failure, error})
 const of = <D, E = any>(d: D): Resource<D, E> => success(d)
-
-export {initial, loading, success, failure, of}
 
 const fromNullable = <D, E = any>(a: D | null | undefined): Resource<D, E> => {
   return a == null ? initial : of(a)
@@ -35,4 +33,15 @@ const toUndefined = <D, E>(resource: Resource<D, E>): D | undefined => {
   return resource.tag === 'success' ? resource.value : undefined
 }
 
-export {fromNullable, tryCatch, toNullable, toUndefined}
+export {
+  tag,
+  initial,
+  loading,
+  success,
+  failure,
+  of,
+  fromNullable,
+  tryCatch,
+  toNullable,
+  toUndefined,
+}
