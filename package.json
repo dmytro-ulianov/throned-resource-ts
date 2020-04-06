@@ -1,0 +1,38 @@
+{
+  "version": "0.1.0",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "build": "tsdx build",
+    "lint": "tsdx lint",
+    "prepare": "tsdx build",
+    "prettier": "npx prettier --config .prettierrc.json --write \"src/**/*.{ts,tsx}\"",
+    "start": "tsdx watch",
+    "test": "tsdx test --watch"
+  },
+  "peerDependencies": {},
+  "husky": {
+    "hooks": {
+      "pre-commit": "tsdx lint"
+    }
+  },
+  "name": "resource-ts",
+  "author": "dmytro-ulianov",
+  "module": "dist/resource-ts.esm.js",
+  "devDependencies": {
+    "@types/jest": "25.2.1",
+    "husky": "4.2.3",
+    "prettier": "2.0.4",
+    "tsdx": "0.13.1",
+    "tslib": "1.11.1",
+    "typescript": "3.8.3"
+  }
+}
