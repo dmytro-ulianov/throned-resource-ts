@@ -3,12 +3,13 @@ import {map} from '../src/functions'
 
 const id = <A>(a: A) => a
 
-const getResources = (value: number = 42) => {
+const getResources = (params: {value?: number; error?: Error} = {}) => {
+  const {value = 42, error = new Error('boom')} = params
   return {
     initial: initial,
     loading: loading,
     success: success(value),
-    failure: failure(new Error('boom')),
+    failure: failure(error),
   }
 }
 
@@ -25,8 +26,8 @@ describe('map', () => {
   test('composition law', () => {
     const {initial, loading, success, failure} = getResources()
 
-    const f = (a: number) => a + 8
-    const g = (a: number) => a * 2
+    const f = (a: number) => a * 2
+    const g = (a: number) => a + 8
 
     expect(map(f)(map(g)(initial))).toEqual(
       map((a: number) => f(g(a)))(initial),
@@ -44,7 +45,7 @@ describe('map', () => {
 
   test('runs function only over success', () => {
     const value = 50
-    const resources = getResources(value)
+    const resources = getResources({value})
 
     const double = (a: number) => a * 2
 
