@@ -1,5 +1,5 @@
 import {initial, loading, success, failure} from '../src/constructors'
-import {map, mapError} from '../src/functions'
+import {map, mapError, bimap} from '../src/functions'
 
 const id = <A>(a: A) => a
 
@@ -96,6 +96,74 @@ describe('mapError', () => {
     expect(mapError(getMessage)(resources.loading)).toEqual(resources.loading)
     expect(mapError(getMessage)(resources.success)).toEqual(resources.success)
     expect(mapError(getMessage)(resources.failure)).toEqual(
+      failure(getMessage(error)),
+    )
+  })
+})
+
+describe('bimap', () => {
+  test('identity law', () => {
+    const resources = getResources()
+
+    expect(bimap(id, id)(resources.initial)).toEqual(resources.initial)
+    expect(bimap(id, id)(resources.loading)).toEqual(resources.loading)
+    expect(bimap(id, id)(resources.success)).toEqual(resources.success)
+    expect(bimap(id, id)(resources.failure)).toEqual(resources.failure)
+  })
+
+  test('composition law', () => {
+    const resources = getResources()
+
+    const fd = (n: number) => `number ${n}`
+    const gd = (n: number) => n + 8
+
+    const fe = (s: string) => s.split('')
+    const ge = (e: Error) => e.message
+
+    expect(bimap(fd, fe)(bimap(gd, ge)(resources.initial))).toEqual(
+      bimap(
+        (n: number) => fd(gd(n)),
+        (e: Error) => fe(ge(e)),
+      )(resources.initial),
+    )
+    expect(bimap(fd, fe)(bimap(gd, ge)(resources.loading))).toEqual(
+      bimap(
+        (n: number) => fd(gd(n)),
+        (e: Error) => fe(ge(e)),
+      )(resources.loading),
+    )
+    expect(bimap(fd, fe)(bimap(gd, ge)(resources.success))).toEqual(
+      bimap(
+        (n: number) => fd(gd(n)),
+        (e: Error) => fe(ge(e)),
+      )(resources.success),
+    )
+    expect(bimap(fd, fe)(bimap(gd, ge)(resources.failure))).toEqual(
+      bimap(
+        (n: number) => fd(gd(n)),
+        (e: Error) => fe(ge(e)),
+      )(resources.failure),
+    )
+  })
+
+  test('runs function over success & failure', () => {
+    const value = 50
+    const error = new Error('panic')
+    const resources = getResources({value, error})
+
+    const double = (n: number) => n * 2
+    const getMessage = (e: Error) => e.message
+
+    expect(bimap(double, getMessage)(resources.initial)).toEqual(
+      resources.initial,
+    )
+    expect(bimap(double, getMessage)(resources.loading)).toEqual(
+      resources.loading,
+    )
+    expect(bimap(double, getMessage)(resources.success)).toEqual(
+      success(double(value)),
+    )
+    expect(bimap(double, getMessage)(resources.failure)).toEqual(
       failure(getMessage(error)),
     )
   })
