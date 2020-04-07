@@ -1,7 +1,5 @@
-import {Resource, Initial, Loading, Failure, Success} from './types'
+import {Initial, Loading, Failure, Success, AnyResource} from './types'
 import {tag} from './constructors'
-
-type AnyResource = Resource<any>
 
 const isInitial = (r: AnyResource): r is Initial => r.tag === tag.initial
 const isLoading = (r: AnyResource): r is Loading => r.tag === tag.loading
