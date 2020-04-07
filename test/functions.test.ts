@@ -1,5 +1,5 @@
 import {initial, loading, success, failure} from '../src/constructors'
-import {map} from '../src/functions'
+import {map, mapError} from '../src/functions'
 
 const id = <A>(a: A) => a
 
@@ -53,5 +53,50 @@ describe('map', () => {
     expect(map(double)(resources.loading)).toEqual(resources.loading)
     expect(map(double)(resources.success)).toEqual(success(double(value)))
     expect(map(double)(resources.failure)).toEqual(resources.failure)
+  })
+})
+
+describe('mapError', () => {
+  test('identity law', () => {
+    const resources = getResources()
+
+    expect(mapError(id)(resources.initial)).toEqual(resources.initial)
+    expect(mapError(id)(resources.loading)).toEqual(resources.loading)
+    expect(mapError(id)(resources.success)).toEqual(resources.success)
+    expect(mapError(id)(resources.failure)).toEqual(resources.failure)
+  })
+
+  test('composition law', () => {
+    const {initial, loading, success, failure} = getResources()
+
+    const f = (s: string) => s.toUpperCase()
+    const g = (e: Error) => e.message
+
+    expect(mapError(f)(mapError(g)(initial))).toEqual(
+      mapError((e: Error) => f(g(e)))(initial),
+    )
+    expect(mapError(f)(mapError(g)(loading))).toEqual(
+      mapError((e: Error) => f(g(e)))(loading),
+    )
+    expect(mapError(f)(mapError(g)(success))).toEqual(
+      mapError((e: Error) => f(g(e)))(success),
+    )
+    expect(mapError(f)(mapError(g)(failure))).toEqual(
+      mapError((e: Error) => f(g(e)))(failure),
+    )
+  })
+
+  test('runs function only over failure', () => {
+    const error = new Error('panic')
+    const resources = getResources({error})
+
+    const getMessage = (e: Error) => e.message
+
+    expect(mapError(getMessage)(resources.initial)).toEqual(resources.initial)
+    expect(mapError(getMessage)(resources.loading)).toEqual(resources.loading)
+    expect(mapError(getMessage)(resources.success)).toEqual(resources.success)
+    expect(mapError(getMessage)(resources.failure)).toEqual(
+      failure(getMessage(error)),
+    )
   })
 })
