@@ -24,22 +24,22 @@ describe('map', () => {
   })
 
   test('composition law', () => {
-    const {initial, loading, success, failure} = getResources()
+    const resources = getResources()
 
-    const f = (a: number) => a * 2
-    const g = (a: number) => a + 8
+    const f = (n: number) => n * 2
+    const g = (n: number) => n + 8
 
-    expect(map(f)(map(g)(initial))).toEqual(
-      map((a: number) => f(g(a)))(initial),
+    expect(map(f)(map(g)(resources.initial))).toEqual(
+      map((n: number) => f(g(n)))(resources.initial),
     )
-    expect(map(f)(map(g)(loading))).toEqual(
-      map((a: number) => f(g(a)))(loading),
+    expect(map(f)(map(g)(resources.loading))).toEqual(
+      map((n: number) => f(g(n)))(resources.loading),
     )
-    expect(map(f)(map(g)(success))).toEqual(
-      map((a: number) => f(g(a)))(success),
+    expect(map(f)(map(g)(resources.success))).toEqual(
+      map((n: number) => f(g(n)))(resources.success),
     )
-    expect(map(f)(map(g)(failure))).toEqual(
-      map((a: number) => f(g(a)))(failure),
+    expect(map(f)(map(g)(resources.failure))).toEqual(
+      map((n: number) => f(g(n)))(resources.failure),
     )
   })
 
@@ -47,7 +47,7 @@ describe('map', () => {
     const value = 50
     const resources = getResources({value})
 
-    const double = (a: number) => a * 2
+    const double = (n: number) => n * 2
 
     expect(map(double)(resources.initial)).toEqual(resources.initial)
     expect(map(double)(resources.loading)).toEqual(resources.loading)
