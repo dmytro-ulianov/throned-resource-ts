@@ -22,3 +22,9 @@ export const bimap = <D, E, T, EE>(
   if (isFailure(r)) return failure(mapError(r.error))
   return r
 }
+
+export const chain = <D, T>(f: (d: D) => Resource<T>) => <E>(
+  r: Resource<D, E>,
+): Resource<T, E> => {
+  return isSuccess(r) ? f(r.value) : r
+}

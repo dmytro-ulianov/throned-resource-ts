@@ -1,5 +1,5 @@
 import {initial, loading, success, failure} from '../src/constructors'
-import {map, mapError, bimap} from '../src/functions'
+import {map, mapError, bimap, chain} from '../src/functions'
 
 const id = <A>(a: A) => a
 
@@ -166,5 +166,39 @@ describe('bimap', () => {
     expect(bimap(double, getMessage)(resources.failure)).toEqual(
       failure(getMessage(error)),
     )
+  })
+})
+
+describe('chain', () => {
+  test('associativity law', () => {
+    const resources = getResources()
+
+    const f = (n: number) => success(`number ${n}`)
+    const g = (n: number) => success(n + 8)
+
+    expect(chain(f)(chain(g)(resources.initial))).toEqual(
+      chain((n: number) => chain(f)(g(n)))(resources.initial),
+    )
+    expect(chain(f)(chain(g)(resources.loading))).toEqual(
+      chain((n: number) => chain(f)(g(n)))(resources.loading),
+    )
+    expect(chain(f)(chain(g)(resources.success))).toEqual(
+      chain((n: number) => chain(f)(g(n)))(resources.success),
+    )
+    expect(chain(f)(chain(g)(resources.failure))).toEqual(
+      chain((n: number) => chain(f)(g(n)))(resources.failure),
+    )
+  })
+
+  test('runs function only over success', () => {
+    const value = 100
+    const resources = getResources({value})
+
+    const showNumber = (n: number) => success(`number ${n}`)
+
+    expect(chain(showNumber)(resources.initial)).toEqual(resources.initial)
+    expect(chain(showNumber)(resources.loading)).toEqual(resources.loading)
+    expect(chain(showNumber)(resources.success)).toEqual(showNumber(value))
+    expect(chain(showNumber)(resources.failure)).toEqual(resources.failure)
   })
 })
