@@ -46,3 +46,9 @@ export const tapError = <E>(f: (e: E) => void) => <D>(
   }
   return r
 }
+
+export const alt = <D, E>(fr: () => Resource<D, E>) => (
+  r: Resource<D, E>,
+): Resource<D, E> => {
+  return isSuccess(r) ? r : fr()
+}

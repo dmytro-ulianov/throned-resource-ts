@@ -1,5 +1,6 @@
 import {initial, loading, success, failure} from '../src/constructors'
-import {map, mapError, bimap, chain, tap, tapError} from '../src/functions'
+import {map, mapError, bimap, chain, tap, tapError, alt} from '../src/functions'
+import {Resource} from '../src/types'
 
 const id = <A>(a: A) => a
 
@@ -241,5 +242,60 @@ describe('tapError', () => {
 
     expect(f).toBeCalledTimes(1)
     expect(f).toBeCalledWith(error)
+  })
+})
+
+describe('alt', () => {
+  test('associativity law', () => {
+    // r.alt(g).alt(f) is equal r.alt(a => g(a).alt(f))
+    const resources = getResources()
+
+    const f = () => success(100)
+    const g = (): Resource<number> => loading
+
+    expect(alt(f)(alt(g)(resources.initial))).toEqual(
+      alt(() => alt(f)(g()))(resources.initial),
+    )
+    expect(alt(f)(alt(g)(resources.loading))).toEqual(
+      alt(() => alt(f)(g()))(resources.loading),
+    )
+    expect(alt(f)(alt(g)(resources.failure))).toEqual(
+      alt(() => alt(f)(g()))(resources.failure),
+    )
+    expect(alt(f)(alt(g)(resources.success))).toEqual(
+      alt(() => alt(f)(g()))(resources.success),
+    )
+  })
+
+  test('distributivity law', () => {
+    const resources = getResources()
+
+    const f = (n: number) => `number ${n}`
+    const g = () => success(0)
+
+    expect(map(f)(alt(g)(resources.initial))).toEqual(
+      alt(() => map(f)(g()))(map(f)(resources.initial)),
+    )
+    expect(map(f)(alt(g)(resources.loading))).toEqual(
+      alt(() => map(f)(g()))(map(f)(resources.loading)),
+    )
+    expect(map(f)(alt(g)(resources.success))).toEqual(
+      alt(() => map(f)(g()))(map(f)(resources.success)),
+    )
+    expect(map(f)(alt(g)(resources.failure))).toEqual(
+      alt(() => map(f)(g()))(map(f)(resources.failure)),
+    )
+  })
+
+  test('uses function only when it is not success', () => {
+    const resources = getResources()
+
+    const altResource = success(100)
+    const f = () => altResource
+
+    expect(alt(f)(resources.initial)).toEqual(altResource)
+    expect(alt(f)(resources.loading)).toEqual(altResource)
+    expect(alt(f)(resources.success)).toEqual(resources.success)
+    expect(alt(f)(resources.failure)).toEqual(altResource)
   })
 })
