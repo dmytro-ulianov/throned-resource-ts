@@ -1,5 +1,5 @@
 import {initial, loading, success, failure} from '../src/constructors'
-import {map, mapError, bimap, chain} from '../src/functions'
+import {map, mapError, bimap, chain, tap, tapError} from '../src/functions'
 
 const id = <A>(a: A) => a
 
@@ -200,5 +200,39 @@ describe('chain', () => {
     expect(chain(showNumber)(resources.loading)).toEqual(resources.loading)
     expect(chain(showNumber)(resources.success)).toEqual(showNumber(value))
     expect(chain(showNumber)(resources.failure)).toEqual(resources.failure)
+  })
+})
+
+describe('tap', () => {
+  test('runs function only over success and returns always the same resource', () => {
+    const value = 42
+    const resources = getResources({value})
+
+    const f = jest.fn((n: number) => ({order: 'Peaky Blinders', id: n}))
+
+    expect(tap(f)(resources.initial)).toEqual(resources.initial)
+    expect(tap(f)(resources.loading)).toEqual(resources.loading)
+    expect(tap(f)(resources.success)).toEqual(resources.success)
+    expect(tap(f)(resources.failure)).toEqual(resources.failure)
+
+    expect(f).toBeCalledTimes(1)
+    expect(f).toBeCalledWith(value)
+  })
+})
+
+describe('tapError', () => {
+  test('runs function only over failure and returns always the same resource', () => {
+    const error = new Error('boom')
+    const resources = getResources({error})
+
+    const f = jest.fn((e: Error) => ({order: 'Peaky Blinders', error: e}))
+
+    expect(tapError(f)(resources.initial)).toEqual(resources.initial)
+    expect(tapError(f)(resources.loading)).toEqual(resources.loading)
+    expect(tapError(f)(resources.success)).toEqual(resources.success)
+    expect(tapError(f)(resources.failure)).toEqual(resources.failure)
+
+    expect(f).toBeCalledTimes(1)
+    expect(f).toBeCalledWith(error)
   })
 })

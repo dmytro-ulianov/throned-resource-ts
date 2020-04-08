@@ -28,3 +28,21 @@ export const chain = <D, T>(f: (d: D) => Resource<T>) => <E>(
 ): Resource<T, E> => {
   return isSuccess(r) ? f(r.value) : r
 }
+
+export const tap = <D>(f: (d: D) => void) => <E>(
+  r: Resource<D, E>,
+): Resource<D, E> => {
+  if (isSuccess(r)) {
+    f(r.value)
+  }
+  return r
+}
+
+export const tapError = <E>(f: (e: E) => void) => <D>(
+  r: Resource<D, E>,
+): Resource<D, E> => {
+  if (isFailure(r)) {
+    f(r.error)
+  }
+  return r
+}
