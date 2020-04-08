@@ -8,6 +8,7 @@ import {
   tapError,
   alt,
   getOrElse,
+  fold,
 } from '../src/functions'
 import {Resource} from '../src/types'
 
@@ -323,5 +324,25 @@ describe('getOrElse', () => {
     expect(getOrElse(f)(resources.failure)).toEqual(fallbackValue)
 
     expect(f).toBeCalledTimes(3)
+  })
+})
+
+describe('fold', () => {
+  test('runs proper function depending on current tag', () => {
+    const value = 42
+    const error = new Error('boom')
+    const resources = getResources({value, error})
+
+    const show = fold(
+      () => 'initial',
+      () => 'loading',
+      (n: number) => `number ${n}`,
+      (e: Error) => e.message,
+    )
+
+    expect(show(resources.initial)).toEqual('initial')
+    expect(show(resources.loading)).toEqual('loading')
+    expect(show(resources.success)).toEqual(`number ${value}`)
+    expect(show(resources.failure)).toEqual(error.message)
   })
 })

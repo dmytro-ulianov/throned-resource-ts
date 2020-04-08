@@ -56,3 +56,27 @@ export const alt = <D, E>(fr: () => Resource<D, E>) => (
 export const getOrElse = <D>(f: () => D) => <E>(r: Resource<D, E>): D => {
   return isSuccess(r) ? r.value : f()
 }
+
+const unreachable = (_: never): never => {
+  throw Error('You should not see this!')
+}
+
+export const fold = <D, E, R>(
+  onInitial: () => R,
+  onLoading: () => R,
+  onSuccess: (value: D) => R,
+  onFailure: (error: E) => R,
+) => (r: Resource<D, E>): R => {
+  switch (r.tag) {
+    case 'initial':
+      return onInitial()
+    case 'loading':
+      return onLoading()
+    case 'success':
+      return onSuccess(r.value)
+    case 'failure':
+      return onFailure(r.error)
+    default:
+      return unreachable(r)
+  }
+}
