@@ -15,6 +15,7 @@ const getResources = (params: {value?: number; error?: Error} = {}) => {
 
 describe('map', () => {
   test('identity law', () => {
+    // r.map(a -> a) is equal r
     const resources = getResources()
 
     expect(map(id)(resources.initial)).toEqual(resources.initial)
@@ -24,6 +25,7 @@ describe('map', () => {
   })
 
   test('composition law', () => {
+    // r.map(a -> f(g(a))) is equal r.map(g).map(f)
     const resources = getResources()
 
     const f = (n: number) => n * 2
@@ -58,6 +60,7 @@ describe('map', () => {
 
 describe('mapError', () => {
   test('identity law', () => {
+    // r.mapError(a -> a) is equal r
     const resources = getResources()
 
     expect(mapError(id)(resources.initial)).toEqual(resources.initial)
@@ -67,6 +70,7 @@ describe('mapError', () => {
   })
 
   test('composition law', () => {
+    // r.mapError(a -> f(g(a))) is equal r.mapError(g).mapError(f)
     const {initial, loading, success, failure} = getResources()
 
     const f = (s: string) => s.toUpperCase()
@@ -103,6 +107,7 @@ describe('mapError', () => {
 
 describe('bimap', () => {
   test('identity law', () => {
+    // r.bimap(a -> a, e -> e) is equal r
     const resources = getResources()
 
     expect(bimap(id, id)(resources.initial)).toEqual(resources.initial)
@@ -112,6 +117,7 @@ describe('bimap', () => {
   })
 
   test('composition law', () => {
+    // r.bimap(a -> f(g(a)), e -> f(g(e))) is equal r.bimap(g, g).bimap(f, f)
     const resources = getResources()
 
     const fd = (n: number) => `number ${n}`
@@ -171,6 +177,7 @@ describe('bimap', () => {
 
 describe('chain', () => {
   test('associativity law', () => {
+    // r.chain(g).chain(f) is equal r.chain(a => g(a).chain(f))
     const resources = getResources()
 
     const f = (n: number) => success(`number ${n}`)
