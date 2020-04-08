@@ -1,5 +1,14 @@
 import {initial, loading, success, failure} from '../src/constructors'
-import {map, mapError, bimap, chain, tap, tapError, alt} from '../src/functions'
+import {
+  map,
+  mapError,
+  bimap,
+  chain,
+  tap,
+  tapError,
+  alt,
+  getOrElse,
+} from '../src/functions'
 import {Resource} from '../src/types'
 
 const id = <A>(a: A) => a
@@ -297,5 +306,22 @@ describe('alt', () => {
     expect(alt(f)(resources.loading)).toEqual(altResource)
     expect(alt(f)(resources.success)).toEqual(resources.success)
     expect(alt(f)(resources.failure)).toEqual(altResource)
+  })
+})
+
+describe('getOrElse', () => {
+  test('uses function only when it is not success, returns value on success', () => {
+    const value = 42
+    const resources = getResources({value})
+
+    const fallbackValue = 0
+    const f = jest.fn(() => fallbackValue)
+
+    expect(getOrElse(f)(resources.initial)).toEqual(fallbackValue)
+    expect(getOrElse(f)(resources.loading)).toEqual(fallbackValue)
+    expect(getOrElse(f)(resources.success)).toEqual(value)
+    expect(getOrElse(f)(resources.failure)).toEqual(fallbackValue)
+
+    expect(f).toBeCalledTimes(3)
   })
 })

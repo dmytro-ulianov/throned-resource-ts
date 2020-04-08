@@ -52,3 +52,7 @@ export const alt = <D, E>(fr: () => Resource<D, E>) => (
 ): Resource<D, E> => {
   return isSuccess(r) ? r : fr()
 }
+
+export const getOrElse = <D>(f: () => D) => <E>(r: Resource<D, E>): D => {
+  return isSuccess(r) ? r.value : f()
+}
