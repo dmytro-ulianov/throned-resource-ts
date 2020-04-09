@@ -57,10 +57,6 @@ export const getOrElse = <D>(f: () => D) => <E>(r: Resource<D, E>): D => {
   return isSuccess(r) ? r.value : f()
 }
 
-const unreachable = (_: never): never => {
-  throw Error('You should not see this!')
-}
-
 export const fold = <D, E, R>(
   onInitial: () => R,
   onLoading: () => R,
@@ -76,8 +72,6 @@ export const fold = <D, E, R>(
       return onSuccess(r.value)
     case 'failure':
       return onFailure(r.error)
-    default:
-      return unreachable(r)
   }
 }
 
