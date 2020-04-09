@@ -80,3 +80,26 @@ export const fold = <D, E, R>(
       return unreachable(r)
   }
 }
+
+const void0 = <T>() => (void 0 as unknown) as T
+
+export const cata = <
+  D,
+  E,
+  RI = undefined,
+  RL = undefined,
+  RS = undefined,
+  RF = undefined
+>(fs: {
+  initial?: () => RI
+  loading?: () => RL
+  success?: (value: D) => RS
+  failure?: (error: E) => RF
+}) => (r: Resource<D, E>): RI | RL | RS | RF => {
+  return fold<D, E, RI | RL | RS | RF>(
+    fs.initial ?? void0,
+    fs.loading ?? void0,
+    fs.success ?? void0,
+    fs.failure ?? void0,
+  )(r)
+}

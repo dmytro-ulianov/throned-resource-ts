@@ -9,6 +9,7 @@ import {
   alt,
   getOrElse,
   fold,
+  cata,
 } from '../src/functions'
 import {Resource} from '../src/types'
 
@@ -339,6 +340,26 @@ describe('fold', () => {
       (n: number) => `number ${n}`,
       (e: Error) => e.message,
     )
+
+    expect(show(resources.initial)).toEqual('initial')
+    expect(show(resources.loading)).toEqual('loading')
+    expect(show(resources.success)).toEqual(`number ${value}`)
+    expect(show(resources.failure)).toEqual(error.message)
+  })
+})
+
+describe('cata', () => {
+  test('runs proper function depending on current tag', () => {
+    const value = 42
+    const error = new Error('boom')
+    const resources = getResources({value, error})
+
+    const show = cata({
+      initial: () => 'initial',
+      loading: () => 'loading',
+      success: (n: number) => `number ${n}`,
+      failure: (e: Error) => e.message,
+    })
 
     expect(show(resources.initial)).toEqual('initial')
     expect(show(resources.loading)).toEqual('loading')
