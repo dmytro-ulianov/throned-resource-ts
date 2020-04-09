@@ -1,6 +1,6 @@
 import {Resource} from './types'
 import {success, failure} from './constructors'
-import {isSuccess, isFailure} from './type-guards'
+import {isSuccess, isFailure, isLoading} from './type-guards'
 
 export const map = <D, T>(f: (d: D) => T) => <E>(
   r: Resource<D, E>,
@@ -96,4 +96,20 @@ export const cata = <
     fs.success ?? void0,
     fs.failure ?? void0,
   )(r)
+}
+
+// todo: list priorities somewhere
+export const ap = <D, E>(r: Resource<D, E>) => <T>(
+  rf: Resource<(d: D) => T, E>,
+): Resource<T, E> => {
+  switch (r.tag) {
+    case 'initial':
+      return isFailure(rf) ? rf : r
+    case 'loading':
+      return isLoading(rf) ? rf : isSuccess(rf) ? r : rf
+    case 'success':
+      return isSuccess(rf) ? success(rf.value(r.value)) : rf
+    case 'failure':
+      return isFailure(rf) ? rf : r
+  }
 }

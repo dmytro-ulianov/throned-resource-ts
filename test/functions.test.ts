@@ -10,6 +10,7 @@ import {
   getOrElse,
   fold,
   cata,
+  ap,
 } from '../src/functions'
 import {Resource} from '../src/types'
 
@@ -365,5 +366,65 @@ describe('cata', () => {
     expect(show(resources.loading)).toEqual('loading')
     expect(show(resources.success)).toEqual(`number ${value}`)
     expect(show(resources.failure)).toEqual(error.message)
+  })
+})
+
+describe('ap', () => {
+  test('composition law', () => {
+    // (ab -> bc -> a -> c).map(fac).ap(fbc).ap(fa) is equal fa.ap(fab).ap(fbc)
+    const resources = getResources()
+
+    type A = number
+    type B = string
+    type C = {message: string}
+
+    const fab = success((n: A): B => `number ${n}`)
+    const fbc = success((s: B): C => ({message: s.toUpperCase()}))
+    const fac = (ab: (a: A) => B) => (bc: (b: B) => C) => (a: A) => bc(ab(a))
+
+    expect(ap(resources.success)(ap(fbc)(map(fac)(fab)))).toEqual(
+      ap(ap(resources.success)(fab))(fbc),
+    )
+  })
+
+  test('properly uses ap depending on resource tags', () => {
+    type R = Resource<number, Error>
+    const value = 42
+    const _ = getResources({value})
+    const resources = {
+      initial: <R>_.initial,
+      loading: <R>_.loading,
+      success: <R>_.success,
+      failure: <R>_.failure,
+    }
+
+    type RF = Resource<(n: number) => string, Error>
+    const f = (n: number) => `number ${n}`
+    const rfs = {
+      initial: <RF>initial,
+      loading: <RF>loading,
+      success: <RF>success(f),
+      failure: <RF>failure(new Error('boom')),
+    }
+
+    expect(ap(resources.initial)(rfs.initial)).toEqual(resources.initial)
+    expect(ap(resources.initial)(rfs.loading)).toEqual(resources.initial)
+    expect(ap(resources.initial)(rfs.failure)).toEqual(resources.failure)
+    expect(ap(resources.initial)(rfs.success)).toEqual(resources.initial)
+
+    expect(ap(resources.loading)(rfs.initial)).toEqual(resources.initial)
+    expect(ap(resources.loading)(rfs.loading)).toEqual(resources.loading)
+    expect(ap(resources.loading)(rfs.failure)).toEqual(resources.failure)
+    expect(ap(resources.loading)(rfs.success)).toEqual(resources.loading)
+
+    expect(ap(resources.success)(rfs.initial)).toEqual(resources.initial)
+    expect(ap(resources.success)(rfs.loading)).toEqual(resources.loading)
+    expect(ap(resources.success)(rfs.failure)).toEqual(resources.failure)
+    expect(ap(resources.success)(rfs.success)).toEqual(success(f(value)))
+
+    expect(ap(resources.failure)(rfs.initial)).toEqual(resources.failure)
+    expect(ap(resources.failure)(rfs.loading)).toEqual(resources.failure)
+    expect(ap(resources.failure)(rfs.failure)).toEqual(resources.failure)
+    expect(ap(resources.failure)(rfs.success)).toEqual(resources.failure)
   })
 })
