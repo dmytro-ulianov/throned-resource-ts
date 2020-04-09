@@ -1,4 +1,4 @@
-import {Resource} from './types'
+import {Resource, AnyResource} from './types'
 import {success, failure} from './constructors'
 import {isSuccess, isFailure, isLoading} from './type-guards'
 
@@ -174,4 +174,25 @@ export function combine<D, E>(...rs: Resource<D, E>[]) {
   }
 
   return combined
+}
+
+export const eq = (r: AnyResource) => (rr: AnyResource) => {
+  switch (r.tag) {
+    case 'initial':
+      return rr.tag === 'initial'
+    case 'loading':
+      return rr.tag === 'loading'
+    case 'success':
+      return rr.tag === 'success' && r.value === rr.value
+    case 'failure':
+      return rr.tag === 'failure' && r.error === rr.error
+  }
+}
+
+export const toNullable = <D, E>(resource: Resource<D, E>): D | null => {
+  return resource.tag === 'success' ? resource.value : null
+}
+
+export const toUndefined = <D, E>(resource: Resource<D, E>): D | undefined => {
+  return resource.tag === 'success' ? resource.value : undefined
 }

@@ -27,11 +27,3 @@ export const tryCatch = <D, E = any>(f: () => D): Resource<D, E> => {
     return failure(e)
   }
 }
-
-export const toNullable = <D, E>(resource: Resource<D, E>): D | null => {
-  return resource.tag === 'success' ? resource.value : null
-}
-
-export const toUndefined = <D, E>(resource: Resource<D, E>): D | undefined => {
-  return resource.tag === 'success' ? resource.value : undefined
-}

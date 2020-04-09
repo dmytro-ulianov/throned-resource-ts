@@ -12,8 +12,11 @@ import {
   cata,
   ap,
   combine,
+  toNullable,
+  toUndefined,
 } from '../src/functions'
 import {Resource} from '../src/types'
+import {allResourcesTuple} from './shared'
 
 const id = <A>(a: A) => a
 
@@ -471,4 +474,30 @@ describe('combine', () => {
     expect(combine(resources.failure, rs.success)).toEqual(resources.failure)
     expect(combine(resources.failure, rs.failure)).toEqual(resources.failure)
   })
+})
+
+it('folds resources using toNullable', () => {
+  expect(allResourcesTuple.map(toNullable)).toMatchInlineSnapshot(`
+    Array [
+      null,
+      null,
+      Object {
+        "title": "Peaky Blinders",
+      },
+      null,
+    ]
+  `)
+})
+
+it('folds resources using toUndefined', () => {
+  expect(allResourcesTuple.map(toUndefined)).toMatchInlineSnapshot(`
+    Array [
+      undefined,
+      undefined,
+      Object {
+        "title": "Peaky Blinders",
+      },
+      undefined,
+    ]
+  `)
 })
