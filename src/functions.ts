@@ -23,7 +23,7 @@ export const bimap = <D, E, T, EE>(
   return r
 }
 
-export const chain = <D, T>(f: (d: D) => Resource<T>) => <E>(
+export const chain = <D, T>(f: (d: D) => Resource<T, any>) => <E>(
   r: Resource<D, E>,
 ): Resource<T, E> => {
   return isSuccess(r) ? f(r.value) : r

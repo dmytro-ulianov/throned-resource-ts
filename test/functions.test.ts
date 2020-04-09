@@ -264,7 +264,7 @@ describe('alt', () => {
     const resources = getResources()
 
     const f = () => success(100)
-    const g = (): Resource<number> => loading
+    const g = (): Resource<number, Error> => loading
 
     expect(alt(f)(alt(g)(resources.initial))).toEqual(
       alt(() => alt(f)(g()))(resources.initial),
