@@ -11,6 +11,7 @@ import {
   fold,
   cata,
   ap,
+  combine,
 } from '../src/functions'
 import {Resource} from '../src/types'
 
@@ -426,5 +427,48 @@ describe('ap', () => {
     expect(ap(resources.failure)(rfs.loading)).toEqual(resources.failure)
     expect(ap(resources.failure)(rfs.failure)).toEqual(resources.failure)
     expect(ap(resources.failure)(rfs.success)).toEqual(resources.failure)
+  })
+})
+
+describe('combine', () => {
+  test('properly uses combine depending on resource tags', () => {
+    const value = 100
+    const resources = getResources({value})
+
+    expect(combine(resources.initial)).toEqual(resources.initial)
+    expect(combine(resources.loading)).toEqual(resources.loading)
+    expect(combine(resources.success)).toEqual(success([value]))
+    expect(combine(resources.failure)).toEqual(resources.failure)
+
+    type R = Resource<string, Error>
+    const string = 'Peaky Blinders'
+    const rs = {
+      initial: <R>initial,
+      loading: <R>loading,
+      success: <R>success(string),
+      failure: <R>failure(new Error('wow')),
+    }
+
+    expect(combine(resources.initial, rs.initial)).toEqual(resources.initial)
+    expect(combine(resources.initial, rs.loading)).toEqual(resources.initial)
+    expect(combine(resources.initial, rs.success)).toEqual(resources.initial)
+    expect(combine(resources.initial, rs.failure)).toEqual(rs.failure)
+
+    expect(combine(resources.loading, rs.initial)).toEqual(resources.initial)
+    expect(combine(resources.loading, rs.loading)).toEqual(resources.loading)
+    expect(combine(resources.loading, rs.success)).toEqual(resources.loading)
+    expect(combine(resources.loading, rs.failure)).toEqual(rs.failure)
+
+    expect(combine(resources.success, rs.initial)).toEqual(rs.initial)
+    expect(combine(resources.success, rs.loading)).toEqual(rs.loading)
+    expect(combine(resources.success, rs.success)).toEqual(
+      success([value, string]),
+    )
+    expect(combine(resources.success, rs.failure)).toEqual(rs.failure)
+
+    expect(combine(resources.failure, rs.initial)).toEqual(resources.failure)
+    expect(combine(resources.failure, rs.loading)).toEqual(resources.failure)
+    expect(combine(resources.failure, rs.success)).toEqual(resources.failure)
+    expect(combine(resources.failure, rs.failure)).toEqual(resources.failure)
   })
 })

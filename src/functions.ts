@@ -113,3 +113,65 @@ export const ap = <D, E>(r: Resource<D, E>) => <T>(
       return isFailure(rf) ? rf : r
   }
 }
+
+export function combine<A, EE>(ra: Resource<A, EE>): Resource<[A], EE>
+export function combine<A, B, EE>(
+  ra: Resource<A, EE>,
+  rb: Resource<B, EE>,
+): Resource<[A, B], EE>
+export function combine<A, B, C, EE>(
+  ra: Resource<A, EE>,
+  rb: Resource<B, EE>,
+  rc: Resource<C, EE>,
+): Resource<[A, B, C], EE>
+export function combine<A, B, C, D, EE>(
+  ra: Resource<A, EE>,
+  rb: Resource<B, EE>,
+  rc: Resource<C, EE>,
+  rd: Resource<D, EE>,
+): Resource<[A, B, C, D], EE>
+export function combine<A, B, C, D, E, EE>(
+  ra: Resource<A, EE>,
+  rb: Resource<B, EE>,
+  rc: Resource<C, EE>,
+  rd: Resource<D, EE>,
+  re: Resource<E, EE>,
+): Resource<[A, B, C, D, E], EE>
+export function combine<A, B, C, D, E, F, EE>(
+  ra: Resource<A, EE>,
+  rb: Resource<B, EE>,
+  rc: Resource<C, EE>,
+  rd: Resource<D, EE>,
+  re: Resource<E, EE>,
+  rf: Resource<F, EE>,
+): Resource<[A, B, C, D, E, F], EE>
+export function combine<A, B, C, D, E, F, G, EE>(
+  ra: Resource<A, EE>,
+  rb: Resource<B, EE>,
+  rc: Resource<C, EE>,
+  rd: Resource<D, EE>,
+  re: Resource<E, EE>,
+  rf: Resource<F, EE>,
+  rg: Resource<G, EE>,
+): Resource<[A, B, C, D, E, F, G], EE>
+export function combine<A, B, C, D, E, F, G, H, EE>(
+  ra: Resource<A, EE>,
+  rb: Resource<B, EE>,
+  rc: Resource<C, EE>,
+  rd: Resource<D, EE>,
+  re: Resource<E, EE>,
+  rf: Resource<F, EE>,
+  rg: Resource<G, EE>,
+  rh: Resource<H, EE>,
+): Resource<[A, B, C, D, E, F, G, H], EE>
+
+export function combine<D, E>(...rs: Resource<D, E>[]) {
+  let combined = success([]) as Resource<D[], E>
+
+  const appendValue = (values: D[]) => (value: D) => [...values, value]
+  for (const r of rs) {
+    combined = ap(r)(map(appendValue)(combined))
+  }
+
+  return combined
+}
