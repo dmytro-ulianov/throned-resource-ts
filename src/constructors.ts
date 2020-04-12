@@ -29,3 +29,11 @@ export const tryCatch = <D, E = unknown>(
     return failure(e)
   }
 }
+
+export const fromPromise = <D, E = unknown>(
+  f: () => Promise<D>,
+): Promise<Success<D> | Failure<E>> => {
+  return f()
+    .then(success)
+    .catch((e: E) => failure(e))
+}

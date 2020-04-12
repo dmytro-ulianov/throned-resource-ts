@@ -1,4 +1,11 @@
-import {of, fromNullable, tryCatch} from '../src/constructors'
+import {
+  of,
+  fromNullable,
+  tryCatch,
+  fromPromise,
+  success,
+  failure,
+} from '../src/constructors'
 import {allResourcesTuple} from './shared'
 
 it('creates resources using each constructor', () => {
@@ -69,4 +76,16 @@ it('creates resources using tryCatch', () => {
       },
     ]
   `)
+})
+
+it('creates resources using fromPromise', () => {
+  expect(fromPromise(() => Promise.resolve(42))).toEqual(
+    Promise.resolve(success(42)),
+  )
+  expect(fromPromise(() => Promise.resolve({title: 'Peaky Blinders'}))).toEqual(
+    Promise.resolve(success({title: 'Peaky Blinders'})),
+  )
+  expect(fromPromise(() => Promise.reject(new Error('boom')))).toEqual(
+    Promise.resolve(failure(new Error('boom'))),
+  )
 })
