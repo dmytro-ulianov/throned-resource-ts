@@ -14,6 +14,7 @@ import {
   combine,
   toNullable,
   toUndefined,
+  exists,
 } from '../src/functions'
 import {Resource} from '../src/types'
 import {allResourcesTuple} from './shared'
@@ -500,4 +501,19 @@ it('folds resources using toUndefined', () => {
       undefined,
     ]
   `)
+})
+
+describe('exists', () => {
+  test('runs function only over success', () => {
+    const value = 8
+    const resources = getResources({value})
+
+    const isEven = (n: number) => n % 2 === 0
+
+    expect(exists(isEven)(resources.initial)).toEqual(false)
+    expect(exists(isEven)(resources.loading)).toEqual(false)
+    expect(exists(isEven)(resources.success)).toEqual(true)
+    expect(exists(isEven)(resources.failure)).toEqual(false)
+    expect(exists(isEven)(success(9))).toEqual(false)
+  })
 })

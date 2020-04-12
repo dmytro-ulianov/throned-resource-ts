@@ -196,3 +196,9 @@ export const toNullable = <D, E>(resource: Resource<D, E>): D | null => {
 export const toUndefined = <D, E>(resource: Resource<D, E>): D | undefined => {
   return resource.tag === 'success' ? resource.value : undefined
 }
+
+export const exists = <D>(f: (value: D) => boolean) => <E>(
+  r: Resource<D, E>,
+): boolean => {
+  return r.tag === 'success' && f(r.value)
+}
