@@ -1,4 +1,4 @@
-import {Resource, Initial, Loading, Success, Failure} from './types'
+import {Initial, Loading, Success, Failure} from './types'
 
 export enum tag {
   initial = 'initial',
@@ -12,15 +12,17 @@ export const loading: Loading = {tag: tag.loading}
 export const success = <D>(value: D): Success<D> => ({tag: tag.success, value})
 export const failure = <E>(error: E): Failure<E> => ({tag: tag.failure, error})
 
-export const of = <D, E = any>(d: D): Resource<D, E> => success(d)
+export const of = <D>(d: D): Success<D> => success(d)
 
-export const fromNullable = <D, E = any>(
+export const fromNullable = <D>(
   a: D | null | undefined,
-): Resource<D, E> => {
+): Initial | Success<D> => {
   return a == null ? initial : of(a)
 }
 
-export const tryCatch = <D, E = any>(f: () => D): Resource<D, E> => {
+export const tryCatch = <D, E = unknown>(
+  f: () => D,
+): Success<D> | Failure<E> => {
   try {
     return of(f())
   } catch (e) {
