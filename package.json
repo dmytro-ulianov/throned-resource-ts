@@ -24,7 +24,7 @@
       "pre-commit": "tsdx lint"
     }
   },
-  "name": "resource-ts",
+  "name": "@throned/resource-ts",
   "author": "dmytro-ulianov",
   "module": "dist/resource-ts.esm.js",
   "devDependencies": {
@@ -36,5 +36,15 @@
     "tsdx": "0.13.1",
     "tslib": "1.11.1",
     "typescript": "3.8.3"
-  }
+  },
+  "keywords": [
+    "algebraic-data-types",
+    "fp-ts",
+    "fp",
+    "functional-programming",
+    "remote-data-ts",
+    "remote-data",
+    "resource",
+    "typescript"
+  ]
 }
