@@ -398,19 +398,19 @@ describe('ap', () => {
     const value = 42
     const _ = getResources({value})
     const resources = {
-      initial: <R>_.initial,
-      loading: <R>_.loading,
-      success: <R>_.success,
-      failure: <R>_.failure,
+      initial: _.initial as R,
+      loading: _.loading as R,
+      success: _.success as R,
+      failure: _.failure as R,
     }
 
     type RF = Resource<(n: number) => string, Error>
     const f = (n: number) => `number ${n}`
     const rfs = {
-      initial: <RF>initial,
-      loading: <RF>loading,
-      success: <RF>success(f),
-      failure: <RF>failure(new Error('boom')),
+      initial: initial as RF,
+      loading: loading as RF,
+      success: success(f) as RF,
+      failure: failure(new Error('boom')) as RF,
     }
 
     expect(ap(resources.initial)(rfs.initial)).toEqual(resources.initial)
@@ -448,10 +448,10 @@ describe('combine', () => {
     type R = Resource<string, Error>
     const string = 'Peaky Blinders'
     const rs = {
-      initial: <R>initial,
-      loading: <R>loading,
-      success: <R>success(string),
-      failure: <R>failure(new Error('wow')),
+      initial: initial as R,
+      loading: loading as R,
+      success: success(string) as R,
+      failure: failure(new Error('wow')) as R,
     }
 
     expect(combine(resources.initial, rs.initial)).toEqual(resources.initial)
