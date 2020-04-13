@@ -202,3 +202,14 @@ export const exists = <D>(f: (value: D) => boolean) => <E>(
 ): boolean => {
   return r.tag === 'success' && f(r.value)
 }
+
+/**
+ * Unsafe method that will return value of type D if the resource is success.
+ * Otherwise it will throw an error.
+ */
+export const extract = <D, E>(r: Resource<D, E>): D => {
+  if (r.tag === 'success') {
+    return r.value
+  }
+  throw new Error(`Can't extract value from resource with "${r.tag}" tag`)
+}

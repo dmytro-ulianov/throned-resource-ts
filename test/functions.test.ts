@@ -15,6 +15,7 @@ import {
   toNullable,
   toUndefined,
   exists,
+  extract,
 } from '../src/functions'
 import {Resource} from '../src/types'
 import {allResourcesTuple} from './shared'
@@ -515,5 +516,17 @@ describe('exists', () => {
     expect(exists(isEven)(resources.success)).toEqual(true)
     expect(exists(isEven)(resources.failure)).toEqual(false)
     expect(exists(isEven)(success(9))).toEqual(false)
+  })
+})
+
+describe('extract', () => {
+  test('extracts value if tag is success, otherwise throws an error', () => {
+    const value = 100
+    const resources = getResources({value})
+
+    expect(() => extract(resources.initial)).toThrow()
+    expect(() => extract(resources.loading)).toThrow()
+    expect(extract(resources.success)).toEqual(value)
+    expect(() => extract(resources.failure)).toThrow()
   })
 })
