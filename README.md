@@ -24,7 +24,7 @@ import {initial, loading, success, failure} from '@throned/resource-ts'
 
 initial // {tag: 'initial'}
 loading // {tag: 'loading'}
-success({result: 'Blade Runner'}) // {tag: 'success', value: 'Blade Runner' }
+success({result: 'Blade Runner'}) // {tag: 'success', value: {result: 'Blade Runner'}}
 failure(new Error('noop')) // {tag: 'failure', error: Error('nope')}
 ```
 
