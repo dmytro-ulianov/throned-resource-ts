@@ -15,9 +15,10 @@
     "lint": "tsdx lint",
     "prepare": "tsdx build",
     "prettier": "npx prettier --config .prettierrc.json --write \"src/**/*.{ts,tsx}\"",
+    "release": "np",
     "start": "tsdx watch",
-    "test": "tsdx test --watch",
-    "release": "np"
+    "test:watch": "tsdx test --watch",
+    "test": "tsdx test"
   },
   "peerDependencies": {},
   "husky": {
