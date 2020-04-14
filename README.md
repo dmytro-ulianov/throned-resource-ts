@@ -32,7 +32,7 @@ The proccess of wrapping your data into **Resource** called lifting. So when you
 
 So now, when your data is lifted, we can do different type-safe manipulations with it using functions from `@throned/resource-ts`. But first, let's see how to unwrap your data from **Resource**, or, using FP terms, fold it.
 
-Let's use [React](https://reactjs.org/) for next example of folding your data into `JSX`. To do that we will use `fold` functions, it provides a type-safe way to extract value/error from your resource and enforces you to handle all possible states.
+Let's use [React](https://reactjs.org/) for next example of folding your data into `JSX`. To do that we will use `fold` function, it provides a type-safe way to extract value/error from your resource and enforces you to handle all possible states.
 
 ```tsx
 import React from 'react'
@@ -98,7 +98,7 @@ Let's imagine next situation
 ```ts
 import {of} from '@throned/resource-ts'
 
-// You have to resources
+// You have two resources
 const number = of(42)
 const mulOptions = of({times: 10})
 
