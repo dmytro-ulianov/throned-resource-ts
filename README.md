@@ -135,7 +135,7 @@ pipe(
 **`ap`**
 
 ```ts
-import {of, chain, map, tap} from '@throned/resource-fp'
+import {of, ap, map, tap} from '@throned/resource-fp'
 import {pipe} from 'fp-ts/lib/pipeable'
 
 const number = of(42)
@@ -178,10 +178,10 @@ const multiply = (x: number, {times}: {times: number}) => {
 pipe(
   /**
    * combine is the most convenient way to work with multiple resources
-   * it merges all resources into one tuple that can be used later one
+   * it merges all resources into one tuple that can be used later on
    */
   combine(number, mulOptions),
-  map((number, options) => multiply(number, options))
+  map(([number, options]) => multiply(number, options))
   tap(console.log) // 420
 )
 
